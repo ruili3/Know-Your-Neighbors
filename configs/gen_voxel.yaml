@@ -1,0 +1,103 @@
+defaults:
+    - default
+    - data: kitti_360
+    - _self_
+
+name: "eval_lidar_occ"
+model: "eval_kyn"
+log_every: 10
+batch_size: 1
+num_workers: 1
+
+
+vis_setting:
+    is_debug: false
+    model_type: "kitti_360"
+    data_path_main: "./KITTI-360"
+    model_path: "checkpoints/kyn.pt"
+    save_path: "./"
+    vis_offset: 1
+    render_range_dict:
+        x_range: [-4.5, 4.5]
+        y_range: [-1.5, 2.5] 
+        z_range: [50, 3]
+        p_res_y: 25
+        ppm: 7
+        pick_list_path: ""
+
+
+data:
+    image_size: [192, 640]
+    data_3d_bboxes: false
+    data_segmentation: false
+    data_fisheye: false
+    data_stereo: false
+    data_fc: 1
+    is_preprocessed: false
+    # LR setting
+    data_path: "./KITTI-360"
+    pose_path: "./KITTI-360/data_poses"
+    debug: True
+
+model_conf:
+    arch: "KYN"
+    use_code: true
+    prediction_mode: default
+
+    code:
+        num_freqs: 6
+        freq_factor: 1.5
+        include_input: true
+
+    encoder:
+        type: "vl_encoder"
+        use_vision_model: true
+        use_vlseg_model: true
+        freeze_vision_model: false
+        freeze_vlseg_model: true
+        resnet_layers: 50
+        num_ch_dec: [32,32,64,128,256]
+        vision_d_out: 64
+        ov_label_path: "datasets/ov_labels/outdoor_labels.txt"
+        lseg_model_path: "checkpoints/demo_e200.ckpt"
+        fuse_type: "concat_reg"
+        return_only_feat: false
+
+    mlp_coarse:
+        type : "vl_modulation_attention"
+        d_hidden : 128
+        attn_head: 4
+        attn_kv_ch: 32
+        lin_attn_type: "img_softmax_q"
+        use_q_residual: true
+        use_valid_pts_mask: true
+        n_blocks : 4
+        skip_layers: [2]
+
+    mlp_fine:
+        type : "empty"
+        n_blocks : 1
+        d_hidden : 128
+
+    z_near: 3
+    z_far: 80
+    ray_batch_size: 256
+    code_mode: z
+    inv_z: true
+    learn_empty: false
+
+    n_frames_encoder: 1
+    n_frames_render: 1
+
+    sample_color: true
+
+renderer:
+    n_coarse : 64
+    n_fine : 0
+    n_fine_depth : 0
+    depth_std : 1.0
+    sched : []
+    white_bkgd : false
+    lindisp: true
+    hard_alpha_cap: true
+
