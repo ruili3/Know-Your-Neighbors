@@ -1,0 +1,104 @@
+defaults:
+    - default
+    - data: kitti_360
+    - _self_
+
+name: "kitti_360"
+model: "kyn"
+output_path: "./result"
+
+
+backend: 'nccl'
+num_epochs: 25
+batch_size: 8
+
+save_best:
+    metric: abs_rel
+    sign: -1
+    per_epoch_save: false
+
+data:
+    data_fc: 2
+    image_size: [192, 640]
+    color_aug: true
+    is_preprocessed: true
+    fisheye_rotation: [0, -15]
+    data_path: "./KITTI-360"
+    pose_path: "./KITTI-360/data_poses"
+
+model_conf:
+    arch: "KYN"
+    use_code: true
+    prediction_mode: default
+
+    code:
+        num_freqs: 6
+        freq_factor: 1.5
+        include_input: true
+
+    encoder:
+        type: "vl_encoder"
+        use_vision_model: true
+        use_vlseg_model: true
+        freeze_vision_model: false
+        freeze_vlseg_model: true
+        resnet_layers: 50
+        num_ch_dec: [32,32,64,128,256]
+        vision_d_out: 64
+        # language settings
+        ov_label_path: "datasets/ov_labels/outdoor_labels.txt"
+        lseg_model_path: "checkpoints/demo_e200.ckpt"
+        fuse_type: "concat_reg"
+        return_only_feat: false
+
+    mlp_coarse:
+        type : "vl_modulation_attention"
+        d_hidden : 128
+        attn_head: 4
+        attn_kv_ch: 32
+        lin_attn_type: "img_softmax_q"
+        use_q_residual: true
+        use_valid_pts_mask: true
+        n_blocks : 4
+        skip_layers: [2]
+    mlp_fine:
+        type : "empty"
+        n_blocks : 1
+        d_hidden : 128
+
+    z_near: 3
+    z_far: 80
+    inv_z: true
+
+    n_frames_encoder: 1
+    n_frames_render: 2
+    frame_sample_mode: kitti360-mono
+
+    sample_mode: patch
+    patch_size: 8
+    ray_batch_size: 4096
+
+    flip_augmentation: true
+
+    learn_empty: false
+    code_mode: z
+
+loss:
+    criterion: "l1+ssim"
+    invalid_policy: weight_guided
+    lambda_edge_aware_smoothness: 0.001
+
+scheduler:
+    type: step
+    step_size: 120000
+    gamma: 0.1
+
+renderer:
+    n_coarse : 64
+    n_fine : 0
+    n_fine_depth : 0
+    depth_std : 1.0
+    sched : []
+    white_bkgd : false
+    lindisp: true
+    hard_alpha_cap: true

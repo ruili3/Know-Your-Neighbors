@@ -8,9 +8,9 @@
 
 **CVPR 2024**
 
-<a href=""><img src='https://img.shields.io/badge/arXiv-KYN-red' alt='Paper PDF'></a>
+<a href="https://arxiv.org/abs/2404.03658"><img src='https://img.shields.io/badge/arXiv-KYN-red' alt='Paper PDF'></a>
 <a href='https://ruili3.github.io/kyn/'><img src='https://img.shields.io/badge/Project_Page-KYN-green' alt='Project Page'></a>
-<a href='https://huggingface.co/'><img src='https://img.shields.io/badge/Hugging_Face-KYN-yellow' alt='Hugging Face (TBA)'></a>
+<a href='https://huggingface.co/'><img src='https://img.shields.io/badge/Hugging_Face-KYN (coming soon)-yellow' alt='Hugging Face'></a>
 </div>
 
 This work presents _Know-Your-Neighbors_ (KYN), a single-view 3D reconstruction method that disambiguates occluded scene geometry by utilizing Vision-Language semantics and spatial reasoning.
@@ -24,7 +24,6 @@ This work presents _Know-Your-Neighbors_ (KYN), a single-view 3D reconstruction 
 python -m venv kyn
 source kyn/bin/activate
 pip install -r requirements.txt
-
 ```
 
 ### 🚀 Quick Start
@@ -87,7 +86,11 @@ python scripts/gen_kitti360_voxel.py -cn gen_voxel
 ```
 
 ### 💻 Training
-TBA
+Download the [LSeg model](https://drive.google.com/file/d/1ayk6NXURI_vIPlym16f_RG3ffxBWHxvb/view?usp=sharing) and put it into `./checkpoints`. Then run:
+```bash
+torchrun --nproc_per_node=<num_of_gpus> train.py -cn train_kyn
+```
+where `<num_of_gpus>` denotes the number of available GPUs. Models will be saved in `./result` by defualt. 
 
 
 ### 📰 Citation
@@ -101,13 +104,13 @@ Please cite our paper if you use the code in this repository:
 }
 ``` 
 
-### 🌟 Star History
+<!-- ### 🌟 Star History
 <div style="text-align: center;">
 <a href="https://star-history.com/#ruili3/Know-Your-Neighbors&Date">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=ruili3/Know-Your-Neighbors&type=Date&theme=dark" />
     <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=ruili3/Know-Your-Neighbors&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=ruili3/Know-Your-Neighbors&type=Date" width="400"/>
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=ruili3/Know-Your-Neighbors&type=Date" width="600"/>
   </picture>
 </a>
-</div>
+</div> -->
